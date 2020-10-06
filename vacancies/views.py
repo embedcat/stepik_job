@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.views.generic import View
+from .models import Specialty, Vacancy, Company
 
 
 class MainView(View):
     def get(self, request, *args, **kwargs):
+        specs = Specialty.objects.all()
+
         return render(request=request, template_name='vacancies/index.html',
                       context={
                           'title': '',
+                          'specs': specs
                       })
 
 
