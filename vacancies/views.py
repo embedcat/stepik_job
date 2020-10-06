@@ -6,43 +6,52 @@ from .models import Specialty, Vacancy, Company
 class MainView(View):
     def get(self, request, *args, **kwargs):
         specs = Specialty.objects.all()
-
+        companies = Company.objects.all()
         return render(request=request, template_name='vacancies/index.html',
                       context={
                           'title': '',
-                          'specs': specs
+                          'specs': specs,
+                          'companies': companies,
                       })
 
 
 class SpecialitiesView(View):
-    def get(self, request, spec, *args, **kwargs):
+    def get(self, request, spec_code, *args, **kwargs):
+        spec = Specialty.objects.get(code=spec_code)
         return render(request=request, template_name='vacancies/search.html',
                       context={
-                          'title': 'Вакансии | ',
+                          'title': f'Вакансии {spec.title} | ',
+                          'spec': spec,
                       })
 
 
 class CompanyView(View):
     def get(self, request, company_id, *args, **kwargs):
+        company = Company.objects.get(id=company_id)
         return render(request=request, template_name='vacancies/company.html',
                       context={
-                          'title': 'Компания | ',
+                          'title': f'Компания {company.name} | ',
+                          'company': company,
                       })
 
 
 class VacanciesAllView(View):
     def get(self, request, *args, **kwargs):
+        specs = Specialty.objects.all()
         return render(request=request, template_name='vacancies/vacancies.html',
                       context={
                           'title': 'Вакансии | ',
+                          'specs': specs,
                       })
 
 
 class VacancyView(View):
     def get(self, request, vacancy_id, *args, **kwargs):
+        vacancy = Vacancy.objects.get(id=vacancy_id)
         return render(request=request, template_name='vacancies/vacancy.html',
                       context={
                           'title': 'Вакансия | ',
+                          'vacancy': vacancy,
                       })
 
 
