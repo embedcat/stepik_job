@@ -1,10 +1,11 @@
 from django.db import models
+from conf import settings
 
 
 class Company(models.Model):
     name = models.CharField(max_length=64)
     location = models.CharField(max_length=64)
-    logo = models.CharField(max_length=64)
+    logo = models.ImageField(upload_to=settings.MEDIA_COMPANY_IMAGE_DIR)
     description = models.CharField(max_length=64)
     employee_count = models.IntegerField()
 
@@ -15,7 +16,7 @@ class Company(models.Model):
 class Specialty(models.Model):
     code = models.CharField(max_length=16)
     title = models.CharField(max_length=64)
-    picture = models.CharField(max_length=64)
+    picture = models.ImageField(upload_to=settings.MEDIA_SPECIALITY_IMAGE_DIR)
 
     def __str__(self):
         return f'Специализация {self.title} ({self.code})'

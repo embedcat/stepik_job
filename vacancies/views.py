@@ -65,6 +65,16 @@ class CompaniesAllView(View):
                       })
 
 
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request=request, template_name='vacancies/login.html')
+
+
+class RegisterView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request=request, template_name='vacancies/register.html')
+
+
 def about_view(request):
     return render(request=request, template_name='vacancies/about.html')
 
