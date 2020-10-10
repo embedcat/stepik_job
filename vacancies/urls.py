@@ -1,5 +1,6 @@
 from django.urls import path
-from vacancies.views import MainView, VacanciesAllView, VacancyView, CompanyView, SpecialitiesView
+from vacancies.views import MainView, VacanciesAllView, VacancyView, \
+    CompanyView, SpecialitiesView, CompaniesAllView, about_view
 
 urlpatterns = [
     path('', MainView.as_view(), name='Main view'),
@@ -7,4 +8,6 @@ urlpatterns = [
     path('vacancies/cat/<str:spec_code>', SpecialitiesView.as_view(), name='Speciality view'),
     path('companies/<int:company_id>', CompanyView.as_view(), name='Company card'),
     path('vacancies/<int:vacancy_id>', VacancyView.as_view(), name="Vacancy view"),
+    path('companies', CompaniesAllView.as_view(), name='All companies'),
+    path('about', about_view, name='About View'),
 ]

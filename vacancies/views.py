@@ -55,6 +55,20 @@ class VacancyView(View):
                       })
 
 
+class CompaniesAllView(View):
+    def get(self, request, *args, **kwargs):
+        companies = Company.objects.all()
+        return render(request=request, template_name='vacancies/companies.html',
+                      context={
+                          'title': 'Лучшие компании | ',
+                          'companies': companies,
+                      })
+
+
+def about_view(request):
+    return render(request=request, template_name='vacancies/about.html')
+
+
 def page_not_found_view(request, exception):
     return render(request=request, template_name='vacancies/error.html', status=404, context={'code': '404'})
 
