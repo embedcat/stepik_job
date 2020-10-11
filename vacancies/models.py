@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from conf import settings
 
 
@@ -8,6 +9,7 @@ class Company(models.Model):
     logo = models.ImageField(upload_to=settings.MEDIA_COMPANY_IMAGE_DIR)
     description = models.CharField(max_length=64)
     employee_count = models.IntegerField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='company')
 
     def __str__(self):
         return f'Компания "{self.name}"'
@@ -34,3 +36,11 @@ class Vacancy(models.Model):
 
     def __str__(self):
         return f'Вакансия "{self.title}" ({self.specialty}) в {self.company}'
+
+
+class Application(models.Model):
+    written_username = models.CharField(max_length=64)
+    written_phone = models.CharField(max_length=64)
+    written_cover_letter = models.CharField(max_length=1024)
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='application')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='application')

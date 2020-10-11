@@ -1,5 +1,7 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render
-from django.views.generic import View
+from django.views.generic import View, CreateView
 from .models import Specialty, Vacancy, Company
 
 
@@ -65,14 +67,15 @@ class CompaniesAllView(View):
                       })
 
 
-class LoginView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request=request, template_name='vacancies/login.html')
+class CustomLoginView(LoginView):
+    redirect_authenticated_user = False
+    template_name = 'vacancies/login.html'
 
 
-class RegisterView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request=request, template_name='vacancies/register.html')
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    success_url = 'login'
+    template_name = 'vacancies/register.html'
 
 
 def about_view(request):

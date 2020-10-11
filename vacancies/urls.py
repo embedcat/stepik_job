@@ -1,6 +1,6 @@
 from django.urls import path
 from vacancies.views import MainView, VacanciesAllView, VacancyView, \
-    CompanyView, SpecialitiesView, CompaniesAllView, about_view, LoginView, RegisterView
+    CompanyView, SpecialitiesView, CompaniesAllView, about_view, CustomLoginView, RegisterView
 
 urlpatterns = [
     path('', MainView.as_view(), name='Main view'),
@@ -10,6 +10,6 @@ urlpatterns = [
     path('vacancies/<int:vacancy_id>', VacancyView.as_view(), name="Vacancy view"),
     path('companies/', CompaniesAllView.as_view(), name='All companies'),
     path('about/', about_view, name='About View'),
-    path('login/', LoginView.as_view(), name='Login View'),
+    path('login/', CustomLoginView.as_view(), name='Login View'),
     path('register/', RegisterView.as_view(), name='Register View'),
 ]
