@@ -1,18 +1,11 @@
-<!DOCTYPE html>
-<html lang="ru">
+{% extends 'vacancies/base.html' %}
+{% block container %}
 
-<head>
-  <title>Джуманджи</title>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-</head>
-
-<body>
   <main class="container">
     <div class="row">
       <div class="col-8 col-lg-4 offset-2 offset-lg-4">
 
-        <form class="form-signin pt-5" method="post" action="signup">{% csrf_token %}
+        <form class="form-signin pt-5" method="post" action="{% url 'register' %}">{% csrf_token %}
           <div class="text-center mt-5 b-1">
 
             <h1 class="h3 mb-3 font-weight-normal">Джуманджи</h1>
@@ -20,26 +13,32 @@
           </div>
           <div class="mt-5 form-label-group">
             <p class="text-muted">Логин</p>
-            <input type="text" id="inputLogin" class="form-control" required autofocus>
+            <input type="text" id="inputLogin" name="username" class="form-control" required autofocus>
             <label for="inputLogin"></label>
           </div>
 
           <div class=" form-label-group">
             <p class="text-muted">Имя</p>
-            <input type="text" id="inputName" class="form-control" required >
+            <input type="text" id="inputName" name="first_name" class="form-control" required >
             <label for="inputName"></label>
           </div>
 
           <div class=" form-label-group">
             <p class="text-muted">Фамилия</p>
-            <input type="text" id="inputSurname" class="form-control" required >
+            <input type="text" id="inputSurname" name="last_name" class="form-control" required >
             <label for="inputSurname"></label>
           </div>
 
           <div class="form-label-group">
             <p class="text-muted"> Пароль</p>
-            <input type="password" id="inputPassword" class="form-control" required>
-            <label for="inputPassword"></label>
+            <input type="password" id="inputPassword1" name="password1" class="form-control" required>
+            <label for="inputPassword1"></label>
+          </div>
+
+          <div class="form-label-group">
+            <p class="text-muted"> Пароль</p>
+            <input type="password" id="inputPassword2" name="password2" class="form-control" required>
+            <label for="inputPassword2"></label>
           </div>
           <div class="checkbox mb-3"></div>
           <button class="btn btn-primary btn-lg btn-block" type="submit">Зарегистрироваться</button>
@@ -52,5 +51,5 @@
       </div>
     </div>
   </main>
-</body>
-</html>
+
+{% endblock %}
