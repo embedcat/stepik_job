@@ -2,7 +2,7 @@
 {% block container %}
   <main class="container mt-3">
     <div class="navbar mt-5">
-      <p><a href="/">Назад</a></p>
+      <p><a href="{% url 'all_companies' %}">Назад</a></p>
     </div>
     <section>
       <div class="text-center">
@@ -23,7 +23,9 @@
                   <p class="text-muted pt-1">{{ vacancy.published_at }}</p>
                 </div>
                 <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  <img src="{{ vacancy.company.logo.url }}" width="130" height="80" alt="">
+                  <a href="{% url 'vacancy' vacancy.id %}">
+                    <img src="{{ vacancy.company.logo.url }}" width="130" height="80" alt="">
+                  </a>
                 </div>
               </div>
             </div>
