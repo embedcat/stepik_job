@@ -1,40 +1,51 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, CreateView
-from .models import Specialty, Vacancy, Company
+
+from .forms import ApplicationForm
+from .models import Specialty, Vacancy, Company, Application
 
 
 class MainView(View):
     def get(self, request):
         specs = Specialty.objects.all()
         companies = Company.objects.all()
-        return render(request=request, template_name='vacancies/index.html',
-                      context={
-                          'title': 'Джуманджи',
-                          'specs': specs,
-                          'companies': companies,
-                      })
+        return render(
+            request=request,
+            template_name='vacancies/index.html',
+            context={
+                'title': 'Джуманджи',
+                'specs': specs,
+                'companies': companies,
+            },
+        )
 
 
 class SpecialitiesView(View):
     def get(self, request, spec_code):
         spec = Specialty.objects.get(code=spec_code)
-        return render(request=request, template_name='vacancies/search.html',
-                      context={
-                          'title': f'Вакансии {spec.title}',
-                          'spec': spec,
-                      })
+        return render(
+            request=request,
+            template_name='vacancies/search.html',
+            context={
+                'title': f'Вакансии {spec.title}',
+                'spec': spec,
+            },
+        )
 
 
 class CompanyView(View):
     def get(self, request, company_id):
         company = Company.objects.get(id=company_id)
-        return render(request=request, template_name='vacancies/company.html',
-                      context={
-                          'title': f'Компания {company.name}',
-                          'company': company,
-                      })
+        return render(
+            request=request,
+            template_name='vacancies/company.html',
+            context={
+                'title': f'Компания {company.name}',
+                'company': company,
+            },
+        )
 
 
 class VacanciesAllView(View):
@@ -49,12 +60,36 @@ class VacanciesAllView(View):
 
 class VacancyView(View):
     def get(self, request, vacancy_id):
+        vacancy = get_object_or_404(Vacancy, id=vacancy_id)
+        return render(
+            request=request,
+            template_name='vacancies/vacancy.html',
+            context={
+                'title': 'Вакансия',
+                'vacancy': vacancy,
+                'form': ApplicationForm(),
+            })
+
+    def post(self, request, vacancy_id):
+        form = ApplicationForm(request.POST)
         vacancy = Vacancy.objects.get(id=vacancy_id)
-        return render(request=request, template_name='vacancies/vacancy.html',
-                      context={
-                          'title': 'Вакансия',
-                          'vacancy': vacancy,
-                      })
+        if form.is_valid():
+            application = Application.objects.create(
+                written_username=form.cleaned_data['written_username'],
+                written_phone=form.cleaned_data['written_phone'],
+                written_cover_letter=form.cleaned_data['written_cover_letter'],
+                vacancy=vacancy,
+                user=request.user,
+            )
+            return redirect('vacancy_send', vacancy_id=vacancy_id)
+        return render(
+            request=request,
+            template_name='vacancies/vacancy.html',
+            context={
+                'title': 'Вакансия',
+                'vacancy': vacancy,
+                'form': form,
+            })
 
 
 class CompaniesAllView(View):
@@ -100,6 +135,9 @@ class VacancySendApplicationView(View):
 class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     template_name = 'vacancies/login.html'
+    extra_context = {
+        'title': 'Вход',
+    }
 
 
 class RegisterView(CreateView):
