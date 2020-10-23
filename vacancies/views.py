@@ -1,9 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, CreateView
 
-from .forms import ApplicationForm
+from .forms import ApplicationForm, CompanyEditForm, VacancyEditForm
 from .models import Specialty, Vacancy, Company, Application
 
 
@@ -73,7 +74,7 @@ class VacancyView(View):
     def post(self, request, vacancy_id):
         form = ApplicationForm(request.POST)
         vacancy = Vacancy.objects.get(id=vacancy_id)
-        if form.is_valid():
+        if form.is_valid() and request.user.is_authenticated:
             application = Application.objects.create(
                 written_username=form.cleaned_data['written_username'],
                 written_phone=form.cleaned_data['written_phone'],
@@ -95,32 +96,87 @@ class VacancyView(View):
 class CompaniesAllView(View):
     def get(self, request):
         companies = Company.objects.all()
-        return render(request=request, template_name='vacancies/companies.html',
-                      context={
-                          'title': 'Лучшие компании',
-                          'companies': companies,
-                      })
+        return render(
+            request=request,
+            template_name='vacancies/companies.html',
+            context={
+                'title': 'Лучшие компании',
+                'companies': companies,
+            })
 
 
 class MyCompanyView(View):
     def get(self, request):
-        return render(request=request, template_name='vacancies/company-create.html',
-                      context={
-                          'title': 'Моя компания',
-                      })
+        company = Company.objects.filter(owner=request.user)[0]
+        # company = []
+        print(company)
+        if company:
+            template_name = 'vacancies/company-edit.html'
+        else:
+            template_name = 'vacancies/company-create.html'
+
+        return render(
+            request=request,
+            template_name=template_name,
+            context={
+                'title': 'Моя компания',
+                'form': CompanyEditForm(instance=company),
+            })
+
+    def post(self, request):
+        form = CompanyEditForm(request.POST)
+        company = Company.objects.filter(owner=request.user)[0]
+        if form.is_valid():
+            company.name = form.cleaned_data['name']
+            company.location = form.cleaned_data['location']
+            company.logo = form.cleaned_data['logo']
+            company.description = form.cleaned_data['description']
+            company.employee_count = form.cleaned_data['emplotee_count']
+            company.save()
+            return redirect('mycompany')
+        return render(
+            request=request,
+            template_name='vacancies/company-edit.html',
+            context={
+                'title': 'Моя компания',
+                'form': form,
+            })
+
+
+class MyCompanyCreateView(View):
+    def get(self, requsest):
+        if requsest.user.is_authenticated:
+            Company.objects.create(
+                name='Название',
+                location='Расположение',
+                logo='https://place-hold.it/120x60',
+                description='Описание',
+                employee_count=0,
+                owner=requsest.user)
+            return redirect('mycompany')
+        raise HttpResponseForbidden()
 
 
 class MyCompanylVacancyListView(View):
     def get(self, request):
+        vacancies = Vacancy.objects.filter(company__owner=request.user)
         return render(request=request, template_name='vacancies/vacancy-list.html',
                       context={
                           'title': 'Вакансии компании',
+                          'vacancies': vacancies,
                       })
 
 
 class MyCompanyVacancyEditView(View):
     def get(self, request, vacancy_id):
-        return render(request=request, template_name='vacancies/vacancy-edit.html')
+        vacancy = Vacancy.objects.get(id=vacancy_id)
+        return render(
+            request=request,
+            template_name='vacancies/vacancy-edit.html',
+            context={
+                'vacancy': vacancy,
+                'form': VacancyEditForm(instance=vacancy),
+            })
 
 
 class VacancySendApplicationView(View):
