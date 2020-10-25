@@ -75,7 +75,7 @@ class VacancyView(View):
         form = ApplicationForm(request.POST)
         vacancy = Vacancy.objects.get(id=vacancy_id)
         if form.is_valid() and request.user.is_authenticated:
-            application = Application.objects.create(
+            Application.objects.create(
                 written_username=form.cleaned_data['written_username'],
                 written_phone=form.cleaned_data['written_phone'],
                 written_cover_letter=form.cleaned_data['written_cover_letter'],
@@ -108,8 +108,6 @@ class CompaniesAllView(View):
 class MyCompanyView(View):
     def get(self, request):
         company = Company.objects.filter(owner=request.user)[0]
-        # company = []
-        print(company)
         if company:
             template_name = 'vacancies/company-edit.html'
         else:
@@ -129,9 +127,8 @@ class MyCompanyView(View):
         if form.is_valid():
             company.name = form.cleaned_data['name']
             company.location = form.cleaned_data['location']
-            company.logo = form.cleaned_data['logo']
             company.description = form.cleaned_data['description']
-            company.employee_count = form.cleaned_data['emplotee_count']
+            company.employee_count = form.cleaned_data['employee_count']
             company.save()
             return redirect('mycompany')
         return render(
@@ -170,12 +167,36 @@ class MyCompanylVacancyListView(View):
 class MyCompanyVacancyEditView(View):
     def get(self, request, vacancy_id):
         vacancy = Vacancy.objects.get(id=vacancy_id)
+        applications = Application.objects.filter(vacancy=vacancy)
         return render(
             request=request,
             template_name='vacancies/vacancy-edit.html',
             context={
+                'title': 'Редактировать вакансию',
                 'vacancy': vacancy,
+                'applications': applications,
                 'form': VacancyEditForm(instance=vacancy),
+            })
+
+    def post(self, request, vacancy_id):
+        form = VacancyEditForm(request.POST)
+        vacancy = Vacancy.objects.get(id=vacancy_id)
+
+        if form.is_valid():
+            vacancy.title = form.cleaned_data['title']
+            vacancy.specialty = form.cleaned_data['specialty']
+            vacancy.skills = form.cleaned_data['skills']
+            vacancy.description = form.cleaned_data['description']
+            vacancy.salary_min = int(form.cleaned_data['salary_min'])
+            vacancy.salary_max = int(form.cleaned_data['salary_max'])
+            vacancy.save()
+            return redirect('mycompany_vacancy', vacancy_id=vacancy_id)
+        return render(
+            request=request,
+            template_name='vacancies/company-edit.html',
+            context={
+                'title': 'Моя компания',
+                'form': form,
             })
 
 

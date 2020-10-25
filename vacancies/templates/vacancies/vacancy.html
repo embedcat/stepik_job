@@ -1,64 +1,47 @@
 {% extends 'vacancies/base.html' %}
+
+{% load crispy_forms_tags %}
+
 {% block container %}
 <main class="container mt-3 pb-5">
-    <div class="row mt-5">
-        <div class="col-12 col-lg-2">
-            <div class="pl-3 mb-5">
-                <p><a href="{% url 'all_vacancies' %}">Назад</a></p>
-            </div>
-        </div>
-        <div class="col-12 col-lg-8">
-            <section class="pl-3">
-                <a href="{% url 'company_card' vacancy.company.id %}">
-                    <img src="{{ vacancy.company.logo.url }}" width="130" height="80" alt="">
-                </a>
-                <div class="d-flex align-items-baseline align-content-baseline">
-                    <h1 class="h2 mt-4 font-weight-bold">{{ vacancy.title }}</h1>
-                    <p class="m-0 pl-3">{{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.</p>
-                </div>
-                <p class="mt-2">{{ vacancy.skills }}</p>
-                <p class="text-muted mb-4">{{ vacancy.company.name }}, {{ vacancy.company.location }}</p>
-                <div style="line-height: 1.8;">
-                    <p>{{ vacancy.description }}</p>
-                </div>
-                <hr>
-                {% if user.is_authenticated %}
-                <form action="{% url 'vacancy' vacancy.id %}" class="card mt-4 mb-3" method="POST">
-                    {% csrf_token %}
-                    <div class="card-body mx-3">
-                        <p class="h5 mt-3 font-weight-normal">Отозваться на вакансию</p>
-                        <div class="form-group">
-                            {{ form.written_username.errors }}
-                            <label class="mb-1 mt-2" for="{{ form.written_username.id_for_label }}">Вас зовут</label>
-                            <input class="form-control" type="text" placeholder=""
-                                   id="{{ form.written_username.auto_id }}"
-                                   name="{{ form.written_username.html_name }}"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                            <label class="mb-1" for="{{ form.written_phone.id_for_label }}">Ваш телефон</label>
-                            <input class="form-control" type="tel" placeholder="" id="{{ form.written_phone.auto_id }}"
-                                   name="{{ form.written_phone.html_name }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="mb-1" for="{{ form.written_caver_letter.id_for_label }}">Сопроводительное
-                                письмо</label>
-                            <textarea class="form-control" rows="8" id="{{ form.written_cover_letter.auto_id }}"
-                                      name="{{ form.written_cover_letter.html_name }}" required></textarea>
-                        </div>
-                        <input type="submit" class="btn btn-primary mt-4 mb-2" value="Отправить отклик">
-                    </div>
-                </form>
-                {% else %}
-                <div style="line-height: 1.8;">
-                    <p><a href="{% url 'login' %}">Войдите</a> для отправки отклика.</p>
-                </div>
-
-                {% endif %}
-
-
-            </section>
-        </div>
+  <div class="row mt-5">
+    <div class="col-12 col-lg-2">
+      <div class="pl-3 mb-5">
+        <p><a href="{% url 'all_vacancies' %}">Назад</a></p>
+      </div>
     </div>
+    <div class="col-12 col-lg-8">
+      <section class="pl-3">
+        <a href="{% url 'company_card' vacancy.company.id %}">
+          <img src="{{ vacancy.company.logo.url }}" width="130" height="80" alt="">
+        </a>
+        <div class="d-flex align-items-baseline align-content-baseline">
+          <h1 class="h2 mt-4 font-weight-bold">{{ vacancy.title }}</h1>
+          <p class="m-0 pl-3">{{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.</p>
+        </div>
+        <p class="mt-2">{{ vacancy.skills }}</p>
+        <p class="text-muted mb-4">{{ vacancy.company.name }}, {{ vacancy.company.location }}</p>
+        <div style="line-height: 1.8;">
+          <p>{{ vacancy.description }}</p>
+        </div>
+        <hr>
+        {% if user.is_authenticated %}
+        <form action="{% url 'vacancy' vacancy.id %}" class="card mt-4 mb-3" method="POST">
+          <div class="card-body mx-3">
+            <p class="h5 mt-3 font-weight-normal">Отозваться на вакансию</p>
+            {% crispy form %}
+          </div>
+        </form>
+        {% else %}
+        <div style="line-height: 1.8;">
+          <p><a href="{% url 'login' %}">Войдите</a> для отправки отклика.</p>
+        </div>
+
+        {% endif %}
+
+
+      </section>
+    </div>
+  </div>
 </main>
 {% endblock %}
