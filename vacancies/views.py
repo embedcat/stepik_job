@@ -3,6 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, CreateView
+from django.db.models import Q
 
 from .forms import ApplicationForm, CompanyEditForm, VacancyEditForm
 from .models import Specialty, Vacancy, Company, Application
@@ -28,7 +29,7 @@ class SpecialitiesView(View):
         spec = Specialty.objects.get(code=spec_code)
         return render(
             request=request,
-            template_name='vacancies/search.html',
+            template_name='vacancies/spec-vacancies.html',
             context={
                 'title': f'Вакансии {spec.title}',
                 'spec': spec,
@@ -211,6 +212,24 @@ class VacancySendApplicationView(View):
                           'title': 'Отклик отправлен',
                           'vacancy_id': int(vacancy_id),
                       })
+
+
+class SearchView(View):
+    def get(self, request):
+        vacancies = Vacancy.objects.none
+        query = ''
+        if 'q' in request.GET:
+            query = request.GET.get('q').strip()
+            vacancies = Vacancy.objects.filter(
+                Q(title__icontains=query) | Q(description__icontains=query) | Q(skills__icontains=query))
+        return render(
+            request=request,
+            template_name='vacancies/search.html',
+            context={
+                'title': 'Поиск',
+                'vacancies': vacancies,
+                'query': query,
+            })
 
 
 class CustomLoginView(LoginView):

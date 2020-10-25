@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-6 mx-auto text-center">
+    <form action="{% url 'search' %}" method="get">
+      <div><input class="form-control mr-sm-2" type="text" placeholder="Например: ios"
+                  aria-label="Search" name="q" value="{{ search_value }}">
+      </div>
+      <div class="my-1">
+        <button class="btn btn-primary" type="submit">Найти вакансии</button>
+      </div>
+    </form>
+    <p>Например:
+      <a href="{% url 'search' %}?q=python" class="text-dark border-bottom border-dark m-1 text-decoration-none">Python</a>
+      <a href="{% url 'search' %}?q=flask" class="text-dark border-bottom border-dark m-1 text-decoration-none">Flask</a>
+      <a href="{% url 'search' %}?q=django" class="text-dark border-bottom border-dark m-1 text-decoration-none">Django</a>
+      <a href="{% url 'search' %}?q=парсинг" class="text-dark border-bottom border-dark m-1 text-decoration-none">Парсинг</a>
+      <a href="{% url 'search' %}?q=ml" class="text-dark border-bottom border-dark m-1 text-decoration-none">ML</a>
+    </p>
+  </div>
+</div>
