@@ -107,18 +107,22 @@ class CompaniesAllView(View):
 
 class MyCompanyView(View):
     def get(self, request):
-        company = Company.objects.filter(owner=request.user)[0]
-        if company:
-            template_name = 'vacancies/company-edit.html'
-        else:
+        company = Company.objects.filter(owner=request.user)
+        print(len(company))
+        if len(company) == 0:
             template_name = 'vacancies/company-create.html'
+            form = CompanyEditForm()
+        else:
+            template_name = 'vacancies/company-edit.html'
+            company = company[0]
+            form = CompanyEditForm(instance=company)
 
         return render(
             request=request,
             template_name=template_name,
             context={
                 'title': 'Моя компания',
-                'form': CompanyEditForm(instance=company),
+                'form': form,
             })
 
     def post(self, request):
