@@ -232,6 +232,16 @@ class SearchView(View):
             })
 
 
+class MyResumeView(View):
+    def get(self, request):
+        return render(
+            request=request,
+            template_name='vacancies/resume-create.html',
+            context={
+                'title': 'Моё резюме',
+            })
+
+
 class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     template_name = 'vacancies/login.html'
