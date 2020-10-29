@@ -23,15 +23,5 @@ class Migration(migrations.Migration):
             name='picture',
             field=models.ImageField(upload_to='speciality_images'),
         ),
-        migrations.CreateModel(
-            name='Application',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('written_username', models.CharField(max_length=64)),
-                ('written_phone', models.CharField(max_length=64)),
-                ('written_cover_letter', models.CharField(max_length=1024)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='application', to=settings.AUTH_USER_MODEL)),
-                ('vacancy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='application', to='vacancies.vacancy')),
-            ],
-        ),
+
     ]
