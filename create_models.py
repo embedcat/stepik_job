@@ -25,7 +25,7 @@ if __name__ == '__main__':
                           employee_count=random.randint(1, 1000))
         company.save()
 
-    skills = ['Python', 'Django', 'Git', 'Linux', 'CSS', 'Excel', 'Photoshop', 'ICQ', 'C++', 'Java', 'C#']
+    skills = ['Python', 'Django', 'Git', 'Linux', 'CSS', 'Парсинг', 'Flask', 'ML',]
     for vacancy in data.jobs:
         specialty = Specialty.objects.get(code=vacancy['cat'])
         company = Company.objects.get(name=vacancy['company'])
