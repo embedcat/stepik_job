@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, CreateView
 from django.db.models import Q
@@ -107,7 +106,7 @@ class CompaniesAllView(View):
             })
 
 
-class MyCompanyView(View):
+class UserCompanyView(LoginRequiredMixin, View):
     def get(self, request):
         company = Company.objects.filter(owner=request.user)
         print(len(company))
@@ -129,7 +128,7 @@ class MyCompanyView(View):
 
     def post(self, request):
         form = CompanyEditForm(request.POST)
-        company = Company.objects.filter(owner=request.user)[0]
+        company = Company.objects.filter(owner=request.user).first()
         if form.is_valid():
             company.name = form.cleaned_data['name']
             company.location = form.cleaned_data['location']
@@ -146,21 +145,19 @@ class MyCompanyView(View):
             })
 
 
-class MyCompanyCreateView(View):
+class UserCompanyCreateView(LoginRequiredMixin, View):
     def get(self, requsest):
-        if requsest.user.is_authenticated:
-            Company.objects.create(
-                name='Название',
-                location='Расположение',
-                logo='https://place-hold.it/120x60',
-                description='Описание',
-                employee_count=0,
-                owner=requsest.user)
-            return redirect('mycompany')
-        raise HttpResponseForbidden()
+        Company.objects.create(
+            name='Название',
+            location='Расположение',
+            logo='https://place-hold.it/120x60',
+            description='Описание',
+            employee_count=0,
+            owner=requsest.user)
+        return redirect('mycompany')
 
 
-class MyCompanylVacancyListView(View):
+class UserCompanylVacancyListView(LoginRequiredMixin, View):
     def get(self, request):
         vacancies = Vacancy.objects.filter(company__owner=request.user)
         return render(request=request, template_name='vacancies/vacancy-list.html',
@@ -170,7 +167,7 @@ class MyCompanylVacancyListView(View):
                       })
 
 
-class MyCompanyVacancyEditView(View):
+class UserCompanyVacancyEditView(LoginRequiredMixin, View):
     def get(self, request, vacancy_id):
         vacancy = Vacancy.objects.get(id=vacancy_id)
         applications = Application.objects.filter(vacancy=vacancy)
@@ -287,7 +284,7 @@ class UserResumeCreateView(LoginRequiredMixin, View):
             status=Resume.DONT_LOOKING_FOR_JOB,
             salary=0,
             specialty=Specialty.objects.all().first()
-            )
+        )
         return redirect('myresume')
 
 
