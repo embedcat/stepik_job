@@ -3,7 +3,7 @@ from django.urls import path
 from vacancies.views import MainView, VacanciesAllView, VacancyView, \
     CompanyView, SpecialitiesView, CompaniesAllView, \
     MyCompanylVacancyListView, MyCompanyVacancyEditView, MyCompanyView, VacancySendApplicationView, \
-    about_view, CustomLoginView, RegisterView, MyCompanyCreateView, SearchView, MyResumeView
+    about_view, CustomLoginView, RegisterView, MyCompanyCreateView, SearchView, UserResumeView, UserResumeCreateView
 
 urlpatterns = [
     path('', MainView.as_view(), name='main'),
@@ -22,5 +22,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
     path('search/', SearchView.as_view(), name='search'),
-    path('myresume/', MyResumeView.as_view(), name='myresume'),
+    path('myresume/', UserResumeView.as_view(), name='myresume'),
+    path('myresume/create/', UserResumeCreateView.as_view(), name='myresume_create'),
 ]

@@ -1,12 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, CreateView
 from django.db.models import Q
 
-from .forms import ApplicationForm, CompanyEditForm, VacancyEditForm
-from .models import Specialty, Vacancy, Company, Application
+from .forms import ApplicationForm, CompanyEditForm, VacancyEditForm, ResumeEditForm
+from .models import Specialty, Vacancy, Company, Application, Resume
 
 
 class MainView(View):
@@ -232,14 +233,62 @@ class SearchView(View):
             })
 
 
-class MyResumeView(View):
+class UserResumeView(LoginRequiredMixin, View):
     def get(self, request):
+        try:
+            resume = Resume.objects.get(user=request.user)
+            template_name = 'vacancies/resume-edit.html'
+            form = ResumeEditForm(instance=resume)
+        except Resume.DoesNotExist:
+            template_name = 'vacancies/resume-create.html'
+            form = None
+
         return render(
             request=request,
-            template_name='vacancies/resume-create.html',
+            template_name=template_name,
             context={
                 'title': 'Моё резюме',
+                'form': form,
             })
+
+    def post(self, request):
+        form = ResumeEditForm(request.POST)
+
+        try:
+            resume = Resume.objects.get(user=request.user)
+        except Resume.DoesNotExist:
+            return redirect('main')
+        if form.is_valid():
+            resume.first_name = form.cleaned_data['first_name']
+            resume.last_name = form.cleaned_data['last_name']
+            resume.status = form.cleaned_data['status']
+            resume.salary = form.cleaned_data['salary']
+            resume.specialty = form.cleaned_data['specialty']
+            resume.education = form.cleaned_data['education']
+            resume.experience = form.cleaned_data['experience']
+            resume.portfolio = form.cleaned_data['portfolio']
+            resume.save()
+            return redirect('myresume')
+        return render(
+            request=request,
+            template_name='vacancies/company-edit.html',
+            context={
+                'title': 'Моё резюме',
+                'form': form,
+            })
+
+
+class UserResumeCreateView(LoginRequiredMixin, View):
+    def get(self, requsest):
+        Resume.objects.create(
+            user=requsest.user,
+            first_name='Имя',
+            last_name='Фамилия',
+            status=Resume.DONT_LOOKING_FOR_JOB,
+            salary=0,
+            specialty=Specialty.objects.all().first()
+            )
+        return redirect('myresume')
 
 
 class CustomLoginView(LoginView):
