@@ -15,7 +15,11 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['written_username', 'written_phone', 'written_cover_letter', ]
+        fields = [
+            'written_username',
+            'written_phone',
+            'written_cover_letter',
+        ]
         labels = {
             'written_username': 'Вас зовут',
             'written_phone': 'Ваш телефон',
@@ -32,10 +36,13 @@ class CompanyEditForm(forms.ModelForm):
 
     class Meta:
         model = Company
-        fields = ['name',
-                  'location',
-                  'description',
-                  'employee_count', ]
+        fields = [
+            'name',
+            'location',
+            'logo',
+            'description',
+            'employee_count',
+        ]
         labels = {
             'name': 'Название',
             'location': 'География',
@@ -54,12 +61,14 @@ class VacancyEditForm(forms.ModelForm):
 
     class Meta:
         model = Vacancy
-        fields = ['title',
+        fields = [
+            'title',
                   'specialty',
                   'skills',
                   'description',
                   'salary_min',
-                  'salary_max', ]
+                  'salary_max',
+        ]
         labels = {
             'title': 'Название вакансии',
             'specialty': 'Специализация',

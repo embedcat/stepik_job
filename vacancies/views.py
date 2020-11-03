@@ -108,14 +108,12 @@ class CompaniesAllView(View):
 
 class UserCompanyView(LoginRequiredMixin, View):
     def get(self, request):
-        company = Company.objects.filter(owner=request.user)
-        print(len(company))
-        if len(company) == 0:
+        company = Company.objects.filter(owner=request.user).first()
+        if company is None:
             template_name = 'vacancies/company-create.html'
             form = CompanyEditForm()
         else:
             template_name = 'vacancies/company-edit.html'
-            company = company[0]
             form = CompanyEditForm(instance=company)
 
         return render(
@@ -127,11 +125,12 @@ class UserCompanyView(LoginRequiredMixin, View):
             })
 
     def post(self, request):
-        form = CompanyEditForm(request.POST)
+        form = CompanyEditForm(request.POST, request.FILES)
         company = Company.objects.filter(owner=request.user).first()
         if form.is_valid():
             company.name = form.cleaned_data['name']
             company.location = form.cleaned_data['location']
+            company.logo = form.cleaned_data['logo']
             company.description = form.cleaned_data['description']
             company.employee_count = form.cleaned_data['employee_count']
             company.save()
@@ -146,15 +145,37 @@ class UserCompanyView(LoginRequiredMixin, View):
 
 
 class UserCompanyCreateView(LoginRequiredMixin, View):
-    def get(self, requsest):
-        Company.objects.create(
-            name='Название',
-            location='Расположение',
-            logo='https://place-hold.it/120x60',
-            description='Описание',
-            employee_count=0,
-            owner=requsest.user)
+    def get(self, request):
+        company = Company.objects.filter(owner=request.user).first()
+        if company is None:
+            return render(
+                request=request,
+                template_name='vacancies/company-edit.html',
+                context={
+                    'title': 'Моя компания',
+                    'form': CompanyEditForm(),
+                })
         return redirect('mycompany')
+
+    def post(self, request):
+        form = CompanyEditForm(request.POST, request.FILES)
+        if form.is_valid():
+            Company.objects.create(
+                name=form.cleaned_data['name'],
+                location=form.cleaned_data['location'],
+                logo=form.cleaned_data['logo'],
+                description=form.cleaned_data['description'],
+                employee_count=form.cleaned_data['employee_count'],
+                owner=request.user
+            )
+            return redirect('mycompany')
+        return render(
+            request=request,
+            template_name='vacancies/company-edit.html',
+            context={
+                'title': 'Моя компания',
+                'form': form,
+            })
 
 
 class UserCompanylVacancyListView(LoginRequiredMixin, View):
@@ -250,7 +271,6 @@ class UserResumeView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = ResumeEditForm(request.POST)
-
         try:
             resume = Resume.objects.get(user=request.user)
         except Resume.DoesNotExist:
@@ -268,7 +288,7 @@ class UserResumeView(LoginRequiredMixin, View):
             return redirect('myresume')
         return render(
             request=request,
-            template_name='vacancies/company-edit.html',
+            template_name='vacancies/resume-edit.html',
             context={
                 'title': 'Моё резюме',
                 'form': form,
@@ -276,16 +296,41 @@ class UserResumeView(LoginRequiredMixin, View):
 
 
 class UserResumeCreateView(LoginRequiredMixin, View):
-    def get(self, requsest):
-        Resume.objects.create(
-            user=requsest.user,
-            first_name='Имя',
-            last_name='Фамилия',
-            status=Resume.DONT_LOOKING_FOR_JOB,
-            salary=0,
-            specialty=Specialty.objects.all().first()
-        )
-        return redirect('myresume')
+    def get(self, request):
+        try:
+            Resume.objects.get(user=request.user)
+            return redirect('myresume')
+        except Resume.DoesNotExist:
+            return render(
+                request=request,
+                template_name='vacancies/resume-edit.html',
+                context={
+                    'title': 'Моё резюме',
+                    'form': ResumeEditForm(),
+                })
+
+    def post(self, request):
+        form = ResumeEditForm(request.POST)
+        if form.is_valid():
+            Resume.objects.create(
+                user=request.user,
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                status=form.cleaned_data['status'],
+                salary=form.cleaned_data['salary'],
+                specialty=form.cleaned_data['specialty'],
+                education=form.cleaned_data['education'],
+                experience=form.cleaned_data['experience'],
+                portfolio=form.cleaned_data['portfolio'],
+            )
+            return redirect('myresume')
+        return render(
+            request=request,
+            template_name='vacancies/resume-edit.html',
+            context={
+                'title': 'Моё резюме',
+                'form': form,
+            })
 
 
 class CustomLoginView(LoginView):
