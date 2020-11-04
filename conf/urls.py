@@ -24,6 +24,7 @@ handler500 = 'vacancies.views.error_view'
 urlpatterns = [
     path('', include('vacancies.urls')),
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 if settings.DEBUG:

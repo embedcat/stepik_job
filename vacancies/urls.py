@@ -1,9 +1,23 @@
 from django.contrib.auth.views import LogoutView
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+
+from vacancies import apiviews
 from vacancies.views import MainView, VacanciesAllView, VacancyView, \
     CompanyView, SpecialitiesView, CompaniesAllView, \
     UserCompanylVacancyListView, UserCompanyVacancyEditView, UserCompanyView, VacancySendApplicationView, \
     about_view, CustomLoginView, RegisterView, UserCompanyCreateView, SearchView, UserResumeView, UserResumeCreateView
+
+
+router = routers.DefaultRouter()
+router.register(r'users', apiviews.UserViewSet)
+router.register(r'groups', apiviews.GroupViewSet)
+router.register(r'vacancies', apiviews.VacanciesViewSet)
+router.register(r'specialties', apiviews.SpecialtyViewSet)
+router.register(r'companies', apiviews.CompanyViewSet)
+router.register(r'applications', apiviews.ApplicationViewSet)
+router.register(r'resumes', apiviews.ResumeViewSet)
+
 
 urlpatterns = [
     path('', MainView.as_view(), name='main'),
@@ -24,4 +38,6 @@ urlpatterns = [
     path('search/', SearchView.as_view(), name='search'),
     path('myresume/', UserResumeView.as_view(), name='myresume'),
     path('myresume/create/', UserResumeCreateView.as_view(), name='myresume_create'),
+
+    path('api/v1/', include(router.urls)),
 ]
